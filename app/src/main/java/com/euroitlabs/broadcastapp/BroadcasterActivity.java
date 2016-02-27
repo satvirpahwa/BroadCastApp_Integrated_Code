@@ -1,17 +1,18 @@
 package com.euroitlabs.broadcastapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,12 +25,13 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.util.Random;
 
-public class BroadcasterActivity extends AppCompatActivity implements View.OnClickListener {
+public class BroadcasterActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     TextView senderpintxt;
     EditText et_message;
     Button sendmsgbtn;
- //   private static final String TAG = "Broadcastapp";
+    EditText et_hotspottimer;
+    //   private static final String TAG = "Broadcastapp";
 
     //    private static final int START_STICKY = 0;
 //    EditText et;
@@ -44,6 +46,7 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
     int N1 = 4, N2 = 6;
     static WifiManager wifi;
     int index;
+    Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,9 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
         senderpintxt = (TextView) findViewById(R.id.sendrpin_txt);
         et_message = (EditText) findViewById(R.id.editText_msg);
         sendmsgbtn = (Button) findViewById(R.id.btnsendmsg);
+        et_hotspottimer = (EditText) findViewById(R.id.timer);
+
+        random = new Random();
         if (readSenderPin().isEmpty()) {
             int value = 0;
             value = generateSenderPin();
@@ -88,11 +94,20 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
             }
         };
         InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(5);
+        filterArray[0] = new InputFilter.LengthFilter(29);
 
         et_message.setFilters(new InputFilter[]{filter, filterArray[0]});
         sendmsgbtn.setOnClickListener(this);
     }
+
+//    @Override
+//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//
+//    }
+//
+//    public void onNothingSelected(AdapterView<?> arg0) {
+//        // TODO Auto-generated method stub
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,6 +120,9 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnsendmsg:
+                long start = System.currentTimeMillis();
+                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
+
                 String st = "";
                 String message = "";
 
@@ -113,10 +131,11 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
                     st = et_message.getText().toString();
                     message = messageToBeEncrypted(st);
                     Log.i("wificheckthread", "Mainactivity wifi enabled message = " + message);
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                    //      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                     if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
                         turnOnOffHotspot(getApplicationContext(), true);
                         et_message.setText("");
+
                     }
                 } else {
                     Log.i("wificheckthread", "Mainactivity inside wifi disabled message");
@@ -127,16 +146,22 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
                         st = et_message.getText().toString();
                         message = messageToBeEncrypted(st);
                         Log.i("wificheckthread", "Mainactivity wifi disabled message = " + message);
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        //         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                         if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
                             turnOnOffHotspot(getApplicationContext(), true);
                             et_message.setText("");
+
                         }
                     }
                 }
+                Intent intent = new Intent(this, BroadcastService.class);
+                intent.putExtra("timer", et_hotspottimer.getText().toString());
+                startService(intent);
                 break;
+
         }
     }
+
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -150,8 +175,7 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
                     turnOnOffHotspot(getApplicationContext(), false);
                     turnOnOffWifi(getApplicationContext(), true);
                     Toast.makeText(this, "Wifi was disabled so enabling wifi and disabling hotspot", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -168,7 +192,6 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
     }
 
     public int generateSenderPin() {
-        Random random = new Random();
         int sender_pin = (1 + random.nextInt(2)) * 1000 + random.nextInt(1000); //will generate a number 0000 to 9999
         //  Toast.makeText(getApplicationContext(), "Random number is = " + value, Toast.LENGTH_LONG).show();
         saveSenderPin(String.valueOf(sender_pin));
@@ -630,7 +653,7 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
 ////            String str_1 = str.substring(0, 15);
 ////            String str_2 = str.substring(15, 30);
 //        encrptedtext = str + "
-        complete_encryptedMessage = "1" + "5" + encryptedMessage;
+        complete_encryptedMessage = String.valueOf(generateTwoRandomDigits()) + encryptedMessage;
         Log.i("wificheckthread", "Mainactivity service encrypted = " + encryptedMessage);
 
 
@@ -939,4 +962,19 @@ public class BroadcasterActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    public int generateTwoRandomDigits() {
+
+        int sender_pin = (1 + random.nextInt(2)) * 10 + random.nextInt(10); //will generate a number 00 to 99
+//        Toast.makeText(getApplicationContext(), "Random number is = " + sender_pin, Toast.LENGTH_LONG).show();
+        return sender_pin;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // On selecting a spinner item
+        String item = parent.getItemAtPosition(position).toString();
+
+        // Showing selected spinner item
+        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+    }
 }

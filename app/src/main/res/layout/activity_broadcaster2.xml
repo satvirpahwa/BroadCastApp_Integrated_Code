@@ -1,43 +1,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="10dp"
     android:orientation="vertical"
     tools:context="com.euroitlabs.broadcastapp.BroadcasterActivity">
 
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="1234"
-        android:textStyle="bold"
-        android:textSize="50dp"
-        android:id="@+id/sendrpin_txt"
-       android:gravity="center_horizontal" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Share the above PIN once with all your receivers."
-        android:id="@+id/textView1"
-        android:layout_gravity="left" />
-    <EditText
-        android:id="@+id/editText_msg"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:maxLength="3"/>
-    <EditText
-        android:id="@+id/editText2"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/sendrpin_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="1234"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="50dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="Share the above PIN once with all your receivers."
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/editText_msg"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:hint="Enter your message here" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Broadcast time (in mins) :" />
+
+            <EditText
+                android:id="@+id/timer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="5" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Send Message"
-        android:id="@+id/btnsendmsg"
-        android:layout_gravity="center_horizontal" />
-
-
-
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btnsendmsg"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style="@style/btnStyleShakespeare"
+            android:text="Send Message" />
+    </LinearLayout>
 </LinearLayout>

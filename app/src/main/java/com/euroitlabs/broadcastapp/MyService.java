@@ -16,6 +16,10 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
 public class MyService extends Service {
@@ -23,14 +27,16 @@ public class MyService extends Service {
     private static final String TAG = "HelloService";
     WifiManager mainWifi;
     private boolean isRunning = false;
-    MainActivity mainactivity;
-    BroadcastReceiver receiver;
+ //   MainActivity mainactivity;
+ //   BroadcastReceiver receiver;
     String decryptedMessage = "";
     int M1 = 2, M2 = 4, M3 = 9, M4 = 5;
     int N1 = 4, N2 = 6;
     String wifiname = "";
     private WifiReceiver receiverWifi;
     int index;
+    static final int READ_BLOCK_SIZE = 100;
+
 
     @Override
     public void onCreate() {
@@ -41,7 +47,7 @@ public class MyService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-      //  final boolean running = true;
+        //  final boolean running = true;
         Toast.makeText(this, " Service Started", Toast.LENGTH_SHORT).show();
         mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         receiverWifi = new WifiReceiver();
@@ -55,7 +61,7 @@ public class MyService extends Service {
                         registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                         mainWifi.startScan();
                         try {
-                            Thread.sleep(30000);
+                            Thread.sleep(60000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -75,12 +81,12 @@ public class MyService extends Service {
         // Prepare intent which is triggered if the
         // notification is selected
         Intent intent = new Intent(this, NotificationView.class);
+        intent.putExtra("message",broadcast_message);
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
 
-        // Build notification
-        // Actions are just fake
+    //     Build notification
         Notification noti = new Notification.Builder(this)
-                .setContentTitle("Message from " + "Satvir")
+                .setContentTitle("Message Received..")
                 .setContentText(broadcast_message).setSmallIcon(R.drawable.ic_launcher)
                 .setContentIntent(pIntent).build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -740,7 +746,48 @@ public class MyService extends Service {
 //        Toast.makeText(getApplicationContext(), "Display message =  " + message, Toast.LENGTH_SHORT).show();
         return message;
     }
+    public void savelastDecryptedMsg(String message) {
+        // add-write text into file
+        try {
+            FileOutputStream fileout = openFileOutput("message.txt", MODE_PRIVATE);
+            OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
+            outputWriter.write(message);
+            outputWriter.close();
 
+            //display file saved message
+            Toast.makeText(getBaseContext(), "File saved successfully!",
+                    Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String readlastDecryptedMsg() {
+        //reading text from file
+        String savedmessage = "";
+        //reading text from file
+        try {
+            FileInputStream fileIn = openFileInput("message.txt");
+            InputStreamReader InputRead = new InputStreamReader(fileIn);
+
+            char[] inputBuffer = new char[READ_BLOCK_SIZE];
+            String s = "";
+            int charRead;
+
+            while ((charRead = InputRead.read(inputBuffer)) > 0) {
+                // char to string conversion
+                String readstring = String.copyValueOf(inputBuffer, 0, charRead);
+                savedmessage += readstring;
+            }
+            InputRead.close();
+            Toast.makeText(getBaseContext(), savedmessage, Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return savedmessage;
+    }
     @Override
     public IBinder onBind(Intent arg0) {
         Log.i(TAG, "Service onBind");
@@ -768,6 +815,7 @@ public class MyService extends Service {
                 Log.d(TAG, "Scanned wifi list is = " + wifiList.get(i).SSID);
                 wifiname = wifiList.get(i).SSID;
                 Log.i("wificheckthread", "Service running = " + wifiname);
+
                 if (wifiname.charAt(0) == '0' || wifiname.charAt(0) == '1' || wifiname.charAt(0) == '2' || wifiname.charAt(0) == '3' || wifiname.charAt(0) == '4' || wifiname.charAt(0) == '5'
                         || wifiname.charAt(0) == '6' || wifiname.charAt(0) == '7' || wifiname.charAt(0) == '8' || wifiname.charAt(0) == '9') {
                     if (wifiname.charAt(1) == '0' || wifiname.charAt(1) == '1' || wifiname.charAt(1) == '2' || wifiname.charAt(1) == '3' || wifiname.charAt(1) == '4' || wifiname.charAt(1) == '5'
@@ -780,11 +828,25 @@ public class MyService extends Service {
                             String notify_message = "";
                             //   notify_message = decryptMessage("G");
                             notify_message = decryptMessage(encrypt_msg);
-                            Notify(notify_message, 0);
+
+                            if(readlastDecryptedMsg().isEmpty()){
+                                Log.d(TAG, "Service inside if");
+                                savelastDecryptedMsg(notify_message);
+                                Notify(notify_message,0);
+                            }else if(notify_message.equals(readlastDecryptedMsg())){
+                                Log.d(TAG, "Service inside elseif 1");
+                                //do nothing
+                            }else if(!notify_message.equals(readlastDecryptedMsg())){
+                                Log.d(TAG, "Service inside elseif 2");
+                                savelastDecryptedMsg(notify_message);
+                                Notify(notify_message,0);
+                            }
 
                         }
                     }
-                } else {
+                }
+
+                else {
                     // do nothing
                 }
 

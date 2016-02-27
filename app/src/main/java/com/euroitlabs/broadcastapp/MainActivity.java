@@ -1,17 +1,18 @@
 package com.euroitlabs.broadcastapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
 
     private Button configbroadcastersbtn, startreceivebroadcastsbtn, stopreceivebroadcastsbtn;
+    ConfigureBroadcastersActivity configure ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         configbroadcastersbtn = (Button) findViewById(R.id.button1);
         startreceivebroadcastsbtn = (Button) findViewById(R.id.button2);
         stopreceivebroadcastsbtn = (Button) findViewById(R.id.button3);
+
+        configure = new ConfigureBroadcastersActivity();
         configbroadcastersbtn.setOnClickListener(this);
         startreceivebroadcastsbtn.setOnClickListener(this);
         stopreceivebroadcastsbtn.setOnClickListener(this);
@@ -41,7 +44,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(getApplicationContext(), ConfigureBroadcastersActivity.class));
                 break;
             case R.id.button2:
+                if(!configure.readReceiverPin().isEmpty())
                 startService(new Intent(this, MyService.class));
+                else
+                    Toast.makeText(this, "Please configure Broadcasters for receiving messages.", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.button3:
                 stopService(new Intent(this, MyService.class));

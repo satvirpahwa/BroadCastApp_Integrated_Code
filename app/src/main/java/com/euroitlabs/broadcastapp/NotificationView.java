@@ -1,16 +1,40 @@
 package com.euroitlabs.broadcastapp;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
-public class NotificationView extends AppCompatActivity {
+public class NotificationView extends Activity implements View.OnClickListener {
+
+    TextView notificationtxt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_view);
+
+        notificationtxt = (TextView) findViewById(R.id.text_notification);
+        processIntent(getIntent());
+        //    Intent intent = new Intent();
+
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        processIntent(intent);
+    }
+
+    ;
+
+    private void processIntent(Intent intent) {
+        //get your extras
+        String message = intent.getStringExtra("message");
+        notificationtxt.setText(message);
     }
 
     @Override
@@ -33,5 +57,14 @@ public class NotificationView extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_notification:
+
+                break;
+        }
     }
 }

@@ -30,14 +30,21 @@
         </activity>
         <activity
             android:name=".NotificationView"
-            android:label="@string/title_activity_notification_view" >
+            android:label="@string/title_activity_notification_view"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".BroadcasterActivity"
             android:label="@string/title_activity_broadcaster" >
         </activity>
+
         <service
             android:name=".MyService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
+        <service
+            android:name=".BroadcastService"
             android:enabled="true"
             android:exported="true" >
         </service>

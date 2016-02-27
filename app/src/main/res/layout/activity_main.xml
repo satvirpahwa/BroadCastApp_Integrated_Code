@@ -5,20 +5,35 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <Button
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Configure Broadcasters"
-        android:id="@+id/button1" />
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Start receiving broadcasts"
-        android:id="@+id/button2" />
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Stop receiving broadcasts"
-        android:id="@+id/button3" />
+        android:layout_height="fill_parent"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Configure Broadcasters"
+            style="@style/btnStyleShakespeare"/>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Start receiving broadcasts"
+            style="@style/btnStyleShakespeare"/>
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Stop receiving broadcasts"
+            style="@style/btnStyleShakespeare"/>
+    </LinearLayout>
 </LinearLayout>

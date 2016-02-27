@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/sa_blue</item>
+        <item name="android:backgroundStacked">@color/stacked_blue</item>
+        <item name="android:backgroundSplit">@color/sa_blue</item>
+    </style>
+</resources>
