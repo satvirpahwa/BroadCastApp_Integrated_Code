@@ -14,7 +14,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -48,7 +47,7 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         //  final boolean running = true;
-        Toast.makeText(this, " Service Started", Toast.LENGTH_SHORT).show();
+  //      Toast.makeText(this, " Service Started", Toast.LENGTH_SHORT).show();
         mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         receiverWifi = new WifiReceiver();
 
@@ -755,8 +754,8 @@ public class MyService extends Service {
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), "File saved successfully!",
+//                    Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -781,7 +780,7 @@ public class MyService extends Service {
                 savedmessage += readstring;
             }
             InputRead.close();
-            Toast.makeText(getBaseContext(), savedmessage, Toast.LENGTH_SHORT).show();
+       //     Toast.makeText(getBaseContext(), savedmessage, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();

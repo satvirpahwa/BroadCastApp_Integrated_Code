@@ -1,12 +1,12 @@
 package com.euroitlabs.broadcastapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,7 +20,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
     private EditText et_name1, et_pin1, et_name2, et_pin2, et_name3, et_pin3, et_name4, et_pin4, et_name5, et_pin5;
     //  private DBManager dbManager;
     static final int READ_BLOCK_SIZE = 100;
-
+    static int c = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +43,18 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
         if (!readReceiverName().isEmpty()) {
             String get_recv_name = readReceiverName();
             String get_recv_pin = readReceiverPin();
-            Toast.makeText(getBaseContext(), get_recv_name,
-                                Toast.LENGTH_SHORT).show();
-            Toast.makeText(getBaseContext(), get_recv_pin,
-                    Toast.LENGTH_SHORT).show();
-            String[] names = new String[5];
-            String[] pins = new String[5];
-
+//            Toast.makeText(getBaseContext(), get_recv_name,
+//                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), get_recv_pin,
+//                    Toast.LENGTH_SHORT).show();
+//            String[] names = new String[0];
+//            String[] pins = new String[0];
             if (get_recv_name.contains(" ")) {
-                names = get_recv_name.split(" ");
-                pins = get_recv_pin.split(" ");
+                Log.i("Configure", "inside contains whitespace");
+
+                String[] names = get_recv_name.split(" ");
+                String[] pins = get_recv_pin.split(" ");
+                Log.i("Configure", "names array lengh = " + String.valueOf(names.length));
                 //       for (int i = 0; i < names.length; i++) {
 //                        Toast.makeText(getBaseContext(), String.valueOf(names.length),
 //                                Toast.LENGTH_SHORT).show();
@@ -77,7 +79,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                     et_pin2.setText(pins[1]);
                     et_pin3.setText(pins[2]);
                     et_pin4.setText(pins[3]);
-                } else {
+                } else if (names.length == 5) {
                     et_name1.setText(names[0]);
                     et_name2.setText(names[1]);
                     et_name3.setText(names[2]);
@@ -88,13 +90,12 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                     et_pin3.setText(pins[2]);
                     et_pin4.setText(pins[3]);
                     et_pin5.setText(pins[4]);
-
-
+                } else {
+                    et_name1.setText(names[0]);
+                    et_pin1.setText(pins[0]);
                 }
             } else {
-                et_name1.setText(names[0]);
-                et_pin1.setText(pins[0]);
-
+                Log.i("Configure", "inside does not contains whitespace");
             }
 
 
@@ -114,9 +115,9 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
-                    Toast.LENGTH_SHORT).show();
-
+//            Toast.makeText(getBaseContext(), "Broadcasters saved",
+//                    Toast.LENGTH_SHORT).show();
+            Utils.customToast(this, "Broadcasters saved");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -140,7 +141,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 sender_pin += readstring;
             }
             InputRead.close();
-            Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,8 +158,8 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), "File saved successfully!",
+//                    Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,13 +184,24 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 sender_pin += readstring;
             }
             InputRead.close();
-            Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return sender_pin;
     }
+
+//    public static boolean check() {
+//         //configure = new ConfigureBroadcastersActivity();
+//        if (!new ConfigureBroadcastersActivity().readReceiverName().isEmpty())
+//            return false;
+//        else
+//            return true;
+//        Log.i("Configure", "names after change= " + (new ConfigureBroadcastersActivity().readReceiverName()));
+////
+////        return c;
+//    }
 
     @Override
     public void onClick(View v) {
@@ -205,23 +217,36 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 final String pin4 = et_pin4.getText().toString();
                 final String name5 = et_name5.getText().toString();
                 final String pin5 = et_pin5.getText().toString();
+                if ((!name1.isEmpty() && pin1.isEmpty()) || (!name2.isEmpty() && pin2.isEmpty()) || (!name3.isEmpty() && pin3.isEmpty()) || (!name4.isEmpty() && pin4.isEmpty()) || (!name5.isEmpty() && pin5.isEmpty())) {
+                 //   Toast.makeText(getApplicationContext(), "Please enter pin corresponding to the name.", Toast.LENGTH_LONG).show();
+                    Utils.customToast(this, "Please enter pin corresponding to the name");
+                } else if ((name1.isEmpty() && !pin1.isEmpty()) || (name2.isEmpty() && !pin2.isEmpty()) || (name3.isEmpty() && !pin3.isEmpty()) || (name4.isEmpty() && !pin4.isEmpty()) || (name5.isEmpty() && !pin5.isEmpty())) {
+                  //  Toast.makeText(getApplicationContext(), "Please enter name corresponding to the name.", Toast.LENGTH_LONG).show();
+                    Utils.customToast(this, "Please enter name corresponding to the pin");
 
-                //     dbManager.insert(name1, pin1);
-                String finalname = name1 + " " + name2 + " " + name3 + " " + name4 + " " + name5;
-                String finalpin = pin1 + " " + pin2  + " " + pin3 + " " + pin4 + " " + pin5;
-                saveReceiverName(finalname);
-                saveReceiverPin(finalpin);
-                Log.i("Configure", "on click name :" + finalname);
-                Log.i("Configure", "on click pin :" + finalpin);
-                Toast.makeText(getApplicationContext(), "save button clicked", Toast.LENGTH_LONG).show();
+                } else if ((name1.isEmpty() && pin1.isEmpty()) && (name2.isEmpty() && pin2.isEmpty()) && (name3.isEmpty() && pin3.isEmpty()) && (name4.isEmpty() && pin4.isEmpty()) && (name5.isEmpty() && pin5.isEmpty())) {
+                    saveReceiverPin("");
+                    saveReceiverName("");
+                    SingletonFile.getInstance().setString("");
+                } else {
+                    //     dbManager.insert(name1, pin1);
+                    String finalname = name1 + " " + name2 + " " + name3 + " " + name4 + " " + name5;
+                    String finalpin = pin1 + " " + pin2 + " " + pin3 + " " + pin4 + " " + pin5;
+                    saveReceiverName(finalname);
+                    saveReceiverPin(finalpin);
+                    SingletonFile.getInstance().setString(finalname);
+                    //    check();
+                    Log.i("Configure", "on click name :" + finalname);
+                    Log.i("Configure", "on click pin :" + finalpin);
+               //     Toast.makeText(getApplicationContext(), "save button clicked", Toast.LENGTH_LONG).show();
+                }
                 break;
             case R.id.buttonback:
-//                Cursor cursor = dbManager.fetch();
-//                while(cursor.isAfterLast() == false){
-//                    et_name2.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.NAME)));
-//                    et_pin2.setText(cursor.getString(cursor.getColumnIndex(DatabaseHelper.PIN)));
-                //        Toast.makeText(getApplicationContext(),cursor.getString(cursor.getColumnIndex(DatabaseHelper.NAME)),Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), "back button clicked", Toast.LENGTH_LONG).show();
+                //              Intent intent =
+//                Log.i("Configure", "value of check :" + String.valueOf(check()));
+//                intent.putExtra("value",String.valueOf(check()));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+              //  Toast.makeText(getApplicationContext(), "back button clicked", Toast.LENGTH_LONG).show();
                 //               }
                 break;
         }

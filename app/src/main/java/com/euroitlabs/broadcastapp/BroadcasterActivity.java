@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,7 +45,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     int N1 = 4, N2 = 6;
     static WifiManager wifi;
     int index;
-    Random random;
+    static Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +83,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
                 for (int i = start; i < end; i++) {
                     if (source.charAt(i) < 32 || source.charAt(i) > 126) {
-                        Toast.makeText(getApplicationContext(), "Character " + source.charAt(start) + " is not allowed in the message.", Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(getApplication(), "Character " + source.charAt(start) + " is not allowed in the message.", Toast.LENGTH_SHORT).show();
+                        Utils.customToast(getBaseContext(), "Character " + source.charAt(start) + " is not allowed in the message.");
+
                         return "";
                     }
                 }
@@ -120,48 +121,56 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnsendmsg:
-                long start = System.currentTimeMillis();
-                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
-
+//                long start = System.currentTimeMillis();
+//                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
+     //
                 String st = "";
                 String message = "";
-
-                if (wifi.isWifiEnabled()) {
-                    Log.i("wificheckthread", "Mainactivity inside wifi enabled message");
-                    st = et_message.getText().toString();
-                    message = messageToBeEncrypted(st);
-                    Log.i("wificheckthread", "Mainactivity wifi enabled message = " + message);
-                    //      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                    if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
-                        turnOnOffHotspot(getApplicationContext(), true);
-                        et_message.setText("");
-
-                    }
+                st = et_message.getText().toString();
+                if (st.isEmpty()) {
+                 //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
+                    //  Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
+                    Utils.customToast(this, "Please enter a message to broadcast.");
                 } else {
-                    Log.i("wificheckthread", "Mainactivity inside wifi disabled message");
+                    if (wifi.isWifiEnabled()) {
+                        Log.i("wificheckthread", "Mainactivity inside wifi enabled message");
+                        message = messageToBeEncrypted(st);
+                        Log.i("wificheckthread", "Mainactivity wifi enabled message = " + message);
+                        //      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
+                            Utils.turnOnOffHotspot(getApplicationContext(), true);
+//                            et_message.setText("");
+//                            //   Toast.makeText(this, "Message broadcasted", Toast.LENGTH_SHORT).show();
+//                            progressDialog.dismiss();
+//                            Utils.customToast(this, "Message broadcasted");
+                        }
+                    } else {
+                        Log.i("wificheckthread", "Mainactivity inside wifi disabled message");
 //                    turnOnOffHotspot(getApplicationContext(), false);
 //                    turnOnOffWifi(getApplicationContext(), true);
-                    if (turnOnOffHotspot(getApplicationContext(), false) == false && turnOnOffWifi(getApplicationContext(), true) == true) {
-                        //  if(wifi.isWifiEnabled()){
-                        st = et_message.getText().toString();
-                        message = messageToBeEncrypted(st);
-                        Log.i("wificheckthread", "Mainactivity wifi disabled message = " + message);
-                        //         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
-                            turnOnOffHotspot(getApplicationContext(), true);
-                            et_message.setText("");
+                        if (Utils.turnOnOffHotspot(getApplicationContext(), false) == false && Utils.turnOnOffWifi(getApplicationContext(), true) == true) {
+                            //  if(wifi.isWifiEnabled()){
 
+                            message = messageToBeEncrypted(st);
+                            Log.i("wificheckthread", "Mainactivity wifi disabled message = " + message);
+                            //         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
+                                Utils.turnOnOffHotspot(getApplicationContext(), true);
+                            }
                         }
                     }
-                }
-                Intent intent = new Intent(this, BroadcastService.class);
-                intent.putExtra("timer", et_hotspottimer.getText().toString());
-                startService(intent);
-                break;
+                    et_message.setText("");
+                    //   Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
+                  //            progressDialog.dismiss();
+                    Utils.customToast(this, "Message broadcasted");
+                    Intent intent = new Intent(this, BroadcastService.class);
+                    intent.putExtra("timer", et_hotspottimer.getText().toString());
+                    startService(intent);
+                    break;
 
+                }
         }
     }
-
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -171,20 +180,24 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 senderpintxt.setText(String.valueOf(value));
                 return true;
             case R.id.action_stop_ongoing_broadcast:
-                if (wifi.isWifiEnabled() == false) {
-                    turnOnOffHotspot(getApplicationContext(), false);
-                    turnOnOffWifi(getApplicationContext(), true);
-                    Toast.makeText(this, "Wifi was disabled so enabling wifi and disabling hotspot", Toast.LENGTH_SHORT).show();
+                if (!wifi.isWifiEnabled()) {
+                    Utils.turnOnOffHotspot(getApplicationContext(), false);
+                    Utils.turnOnOffWifi(getApplicationContext(), true);
+                    //   Toast.makeText(this, "Broadcasting message stopped", Toast.LENGTH_SHORT).show();
+                    Utils.customToast(this, "Broadcasting message stopped");
                 } else {
-                    Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
+                    Utils.customToast(this, "No Ongoing Broadcast to stop");
+
                 }
                 return true;
             case R.id.action_receiver_setting:
                 Intent in = new Intent(getApplicationContext(), MainActivity.class);
+                in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(in);
                 return true;
             case R.id.action_help:
-                Toast.makeText(this, "Option help", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(this, "Option help", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -207,8 +220,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             outputWriter.close();
 
             //display file saved message
-            Toast.makeText(getBaseContext(), "File saved successfully!",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getBaseContext(), "Broadcasters saved",
+//                    Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -233,7 +246,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 sender_pin += readstring;
             }
             InputRead.close();
-            Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
+            //  Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -241,42 +254,42 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         return sender_pin;
     }
 
-    /**
-     * Turn on or off Hotspot.
-     *
-     * @param context
-     * @param isTurnToOn
-     */
-    public static boolean turnOnOffHotspot(Context context, boolean isTurnToOn) {
-        WifiManager wifiManager = (WifiManager) context
-                .getSystemService(Context.WIFI_SERVICE);
-        WifiApControl apControl = WifiApControl.getApControl(wifiManager);
-        if (apControl != null) {
-
-            // TURN OFF YOUR WIFI BEFORE ENABLE HOTSPOT
-            if (wifiManager.isWifiEnabled() && isTurnToOn)
-                turnOnOffWifi(context, false);
-
-            apControl.setWifiApEnabled(apControl.getWifiApConfiguration(),
-                    isTurnToOn);
-        }
-        return isTurnToOn;
-    }
-
-
-    /**
-     * Turn On or Off wifi
-     *
-     * @param context
-     * @param isTurnToOn
-     */
-    public static boolean turnOnOffWifi(Context context, boolean isTurnToOn) {
-        WifiManager wifiManager = (WifiManager) context
-                .getSystemService(Context.WIFI_SERVICE);
-
-        wifiManager.setWifiEnabled(isTurnToOn);
-        return isTurnToOn;
-    }
+//    /**
+//     * Turn on or off Hotspot.
+//     *
+//     * @param context
+//     * @param isTurnToOn
+//     */
+//    public static boolean turnOnOffHotspot(Context context, boolean isTurnToOn) {
+//        WifiManager wifiManager = (WifiManager) context
+//                .getSystemService(Context.WIFI_SERVICE);
+//        WifiApControl apControl = WifiApControl.getApControl(wifiManager);
+//        if (apControl != null) {
+//
+//            // TURN OFF YOUR WIFI BEFORE ENABLE HOTSPOT
+//            if (wifiManager.isWifiEnabled() && isTurnToOn)
+//                turnOnOffWifi(context, false);
+//
+//            apControl.setWifiApEnabled(apControl.getWifiApConfiguration(),
+//                    isTurnToOn);
+//        }
+//        return isTurnToOn;
+//    }
+//
+//
+//    /**
+//     * Turn On or Off wifi
+//     *
+//     * @param context
+//     * @param isTurnToOn
+//     */
+//    public static boolean turnOnOffWifi(Context context, boolean isTurnToOn) {
+//        WifiManager wifiManager = (WifiManager) context
+//                .getSystemService(Context.WIFI_SERVICE);
+//
+//        wifiManager.setWifiEnabled(isTurnToOn);
+//        return isTurnToOn;
+//    }
 
     public boolean setHotspotName(String newName, Context context) {
 
@@ -962,7 +975,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
     }
 
-    public int generateTwoRandomDigits() {
+    public static int generateTwoRandomDigits() {
 
         int sender_pin = (1 + random.nextInt(2)) * 10 + random.nextInt(10); //will generate a number 00 to 99
 //        Toast.makeText(getApplicationContext(), "Random number is = " + sender_pin, Toast.LENGTH_LONG).show();
@@ -975,6 +988,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         String item = parent.getItemAtPosition(position).toString();
 
         // Showing selected spinner item
-        Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+        //  Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
     }
 }
