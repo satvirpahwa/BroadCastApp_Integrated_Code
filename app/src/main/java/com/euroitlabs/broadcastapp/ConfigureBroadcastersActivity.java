@@ -245,8 +245,10 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 //              Intent intent =
 //                Log.i("Configure", "value of check :" + String.valueOf(check()));
 //                intent.putExtra("value",String.valueOf(check()));
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-              //  Toast.makeText(getApplicationContext(), "back button clicked", Toast.LENGTH_LONG).show();
+                Intent in = new Intent(getApplicationContext(), MainActivity.class);
+                in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(in);
+                //  Toast.makeText(getApplicationContext(), "back button clicked", Toast.LENGTH_LONG).show();
                 //               }
                 break;
         }

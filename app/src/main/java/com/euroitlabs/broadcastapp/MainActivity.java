@@ -63,29 +63,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                    toast.show();
                     Utils.customToast(this, "Please configure Broadcasters for receiving messages");
                 } else {
-                    if (mainWifi.isWifiEnabled()) {
-                        startService(new Intent(this, MyService.class));
-                        //  Toast.makeText(this, "Receive broadcast messages enabled", Toast.LENGTH_SHORT).show();
-                        Utils.customToast(this, "Receive broadcast messages enabled 1");
-                    } else {
-                        if (Utils.turnOnOffWifi(getApplicationContext(), true)) {
-                            startService(new Intent(this, MyService.class));
+                    if (!isMyServiceRunning(MyService.class)) {
+                        if (mainWifi.isWifiEnabled()) {
+                            startService(new Intent(getApplicationContext(), MyService.class));
                             //  Toast.makeText(this, "Receive broadcast messages enabled", Toast.LENGTH_SHORT).show();
-                            Utils.customToast(this, "Receive broadcast messages enabled 2");
+                            //   Utils.customToast(this, "Receive broadcast messages enabled 1");
+                        } else {
+                            if (Utils.turnOnOffWifi(getApplicationContext(), true)) {
+                                startService(new Intent(getApplicationContext(), MyService.class));
+                                //  Toast.makeText(this, "Receive broadcast messages enabled", Toast.LENGTH_SHORT).show();
+                                //    Utils.customToast(this, "Receive broadcast messages enabled 2");
+                            }
                         }
+                        Utils.customToast(this, "Receive broadcast messages enabled");
+                    } else {
+                      //  Utils.customToast(this, "Already enabled");
                     }
                 }
                 break;
             case R.id.button3:
                 if (isMyServiceRunning(MyService.class)) {
-                    if(mainWifi.isWifiEnabled()) {
+                    if (mainWifi.isWifiEnabled()) {
                         stopService(new Intent(this, MyService.class));
                         // Toast.makeText(this, "Receiving Broadcasts stopped", Toast.LENGTH_SHORT).show();
                         Utils.customToast(this, "Receiving Broadcasts stopped");
                     }
                 } else {
                     //   Toast.makeText(this, "No Receive Broadcast service enabled", Toast.LENGTH_SHORT).show();
-                    Utils.customToast(this, "No Receive Broadcast service enabled");
+                  //  Utils.customToast(this, "No Receive Broadcast service enabled");
                 }
                 break;
         }

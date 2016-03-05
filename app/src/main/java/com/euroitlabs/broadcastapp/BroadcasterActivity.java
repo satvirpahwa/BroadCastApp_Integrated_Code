@@ -43,6 +43,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     //   String decryptedMessage = "";
     int M1 = 2, M2 = 4, M3 = 9, M4 = 5;
     int N1 = 4, N2 = 6;
+  //  String first2digits;
     static WifiManager wifi;
     int index;
     static Random random;
@@ -187,7 +188,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     Utils.customToast(this, "Broadcasting message stopped");
                 } else {
                     //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
-                    Utils.customToast(this, "No Ongoing Broadcast to stop");
+                  //  Utils.customToast(this, "No Ongoing Broadcast to stop");
 
                 }
                 return true;
@@ -363,7 +364,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     }
 
     String encryptMessage(String hotspotName) {
-
+     //   first2digits = String.valueOf(generateTwoRandomDigits());
         encryptedMessage = "";
         //   char c ;
         for (index = 0; index < hotspotName.length(); index++) {

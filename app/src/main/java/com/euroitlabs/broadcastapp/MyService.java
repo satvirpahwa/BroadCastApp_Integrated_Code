@@ -23,11 +23,11 @@ import java.util.List;
 
 public class MyService extends Service {
 
-    private static final String TAG = "HelloService";
+    private static final String TAG = "MyService";
     WifiManager mainWifi;
     private boolean isRunning = false;
- //   MainActivity mainactivity;
- //   BroadcastReceiver receiver;
+    //   MainActivity mainactivity;
+    //   BroadcastReceiver receiver;
     String decryptedMessage = "";
     int M1 = 2, M2 = 4, M3 = 9, M4 = 5;
     int N1 = 4, N2 = 6;
@@ -40,16 +40,16 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "Service onCreate");
-
+        mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        receiverWifi = new WifiReceiver();
         isRunning = true;
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         //  final boolean running = true;
-  //      Toast.makeText(this, " Service Started", Toast.LENGTH_SHORT).show();
-        mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        receiverWifi = new WifiReceiver();
+        //      Toast.makeText(this, " Service Started", Toast.LENGTH_SHORT).show();
+
 
         Runnable r = new Runnable() {
 
@@ -80,10 +80,10 @@ public class MyService extends Service {
         // Prepare intent which is triggered if the
         // notification is selected
         Intent intent = new Intent(this, NotificationView.class);
-        intent.putExtra("message",broadcast_message);
+        intent.putExtra("message", broadcast_message);
         PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
 
-    //     Build notification
+        //     Build notification
         Notification noti = new Notification.Builder(this)
                 .setContentTitle("Message Received..")
                 .setContentText(broadcast_message).setSmallIcon(R.drawable.ic_launcher)
@@ -745,6 +745,7 @@ public class MyService extends Service {
 //        Toast.makeText(getApplicationContext(), "Display message =  " + message, Toast.LENGTH_SHORT).show();
         return message;
     }
+
     public void savelastDecryptedMsg(String message) {
         // add-write text into file
         try {
@@ -780,13 +781,14 @@ public class MyService extends Service {
                 savedmessage += readstring;
             }
             InputRead.close();
-       //     Toast.makeText(getBaseContext(), savedmessage, Toast.LENGTH_SHORT).show();
+            //     Toast.makeText(getBaseContext(), savedmessage, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return savedmessage;
     }
+
     @Override
     public IBinder onBind(Intent arg0) {
         Log.i(TAG, "Service onBind");
@@ -811,47 +813,48 @@ public class MyService extends Service {
             wifiList = mainWifi.getScanResults();
 
             for (int i = 0; i < wifiList.size(); i++) {
-                Log.d(TAG, "Scanned wifi list is = " + wifiList.get(i).SSID);
+
+                Log.d(TAG, "Scanned wifi list is = " + wifiList.size());
                 wifiname = wifiList.get(i).SSID;
                 Log.i("wificheckthread", "Service running = " + wifiname);
+                if (!wifiname.isEmpty()) {
+                    if (wifiname.charAt(0) == '0' || wifiname.charAt(0) == '1' || wifiname.charAt(0) == '2' || wifiname.charAt(0) == '3' || wifiname.charAt(0) == '4' || wifiname.charAt(0) == '5'
+                            || wifiname.charAt(0) == '6' || wifiname.charAt(0) == '7' || wifiname.charAt(0) == '8' || wifiname.charAt(0) == '9') {
+                        if (wifiname.charAt(1) == '0' || wifiname.charAt(1) == '1' || wifiname.charAt(1) == '2' || wifiname.charAt(1) == '3' || wifiname.charAt(1) == '4' || wifiname.charAt(1) == '5'
+                                || wifiname.charAt(1) == '6' || wifiname.charAt(1) == '7' || wifiname.charAt(1) == '8' || wifiname.charAt(1) == '9') {
+                            if (wifiname.charAt(16) == '6') {
+                                String encrypt_msg = "";
+                                encrypt_msg = wifiname.substring(2);
+                                Log.d(TAG, "Service encrypted message: " + encrypt_msg);
+                                //   mainactivity.decryptMessage(encrypt_msg);
+                                String notify_message = "";
+                                //   notify_message = decryptMessage("G");
+                                notify_message = decryptMessage(encrypt_msg);
 
-                if (wifiname.charAt(0) == '0' || wifiname.charAt(0) == '1' || wifiname.charAt(0) == '2' || wifiname.charAt(0) == '3' || wifiname.charAt(0) == '4' || wifiname.charAt(0) == '5'
-                        || wifiname.charAt(0) == '6' || wifiname.charAt(0) == '7' || wifiname.charAt(0) == '8' || wifiname.charAt(0) == '9') {
-                    if (wifiname.charAt(1) == '0' || wifiname.charAt(1) == '1' || wifiname.charAt(1) == '2' || wifiname.charAt(1) == '3' || wifiname.charAt(1) == '4' || wifiname.charAt(1) == '5'
-                            || wifiname.charAt(1) == '6' || wifiname.charAt(1) == '7' || wifiname.charAt(1) == '8' || wifiname.charAt(1) == '9') {
-                        if (wifiname.charAt(16) == '6') {
-                            String encrypt_msg = "";
-                            encrypt_msg = wifiname.substring(2);
-                            Log.d(TAG, "Service encrypted message: " + encrypt_msg);
-                            //   mainactivity.decryptMessage(encrypt_msg);
-                            String notify_message = "";
-                            //   notify_message = decryptMessage("G");
-                            notify_message = decryptMessage(encrypt_msg);
+                                if (readlastDecryptedMsg().isEmpty()) {
+                                    Log.d(TAG, "Service inside if");
+                                    savelastDecryptedMsg(notify_message);
+                                    Notify(notify_message, 0);
+                                } else if (notify_message.equals(readlastDecryptedMsg())) {
+                                    Log.d(TAG, "Service inside elseif 1");
+                                    //do nothing
+                                } else if (!notify_message.equals(readlastDecryptedMsg())) {
+                                    Log.d(TAG, "Service inside elseif 2");
+                                    savelastDecryptedMsg(notify_message);
+                                    Notify(notify_message, 0);
+                                }
 
-                            if(readlastDecryptedMsg().isEmpty()){
-                                Log.d(TAG, "Service inside if");
-                                savelastDecryptedMsg(notify_message);
-                                Notify(notify_message,0);
-                            }else if(notify_message.equals(readlastDecryptedMsg())){
-                                Log.d(TAG, "Service inside elseif 1");
-                                //do nothing
-                            }else if(!notify_message.equals(readlastDecryptedMsg())){
-                                Log.d(TAG, "Service inside elseif 2");
-                                savelastDecryptedMsg(notify_message);
-                                Notify(notify_message,0);
                             }
-
                         }
+                    } else {
+                        // do nothing
                     }
-                }
-
-                else {
+                } else {
                     // do nothing
                 }
-
             }
-
         }
 
     }
+
 }
