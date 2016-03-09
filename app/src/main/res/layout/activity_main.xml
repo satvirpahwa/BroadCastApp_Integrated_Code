@@ -14,26 +14,38 @@
 
         <Button
             android:id="@+id/button1"
+            style="@style/btnStyleShakespeare"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
             android:text="Configure Broadcasters"
-            style="@style/btnStyleShakespeare"/>
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/button2"
+            style="@style/btnStyleShakespeare"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="Start receiving broadcasts"
-            style="@style/btnStyleShakespeare"/>
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:text="Start Receiving Broadcasts"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/button3"
+            style="@style/btnStyleShakespeare"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="Stop receiving broadcasts"
-            style="@style/btnStyleShakespeare"/>
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:text="Stop Receiving Broadcasts"
+            android:textSize="20dp"
+            android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

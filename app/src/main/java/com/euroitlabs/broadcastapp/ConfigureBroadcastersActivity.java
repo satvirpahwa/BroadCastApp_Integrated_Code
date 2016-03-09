@@ -100,6 +100,10 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
 
 
         }
+      //  ConfigureBroadcastersActivity c = new ConfigureBroadcastersActivity();
+//        String x = readReceiverName();
+//        Log.i("Configure", "names value = " + x);
+
 //        dbManager = new DBManager(this);
 //        dbManager.open();
         savebtn.setOnClickListener(this);
@@ -125,7 +129,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
 
     public String readReceiverName() {
         //reading text from file
-        String sender_pin = "";
+        String sender_name = "";
         //reading text from file
         try {
             FileInputStream fileIn = openFileInput("recv_name.txt");
@@ -138,7 +142,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
             while ((charRead = InputRead.read(inputBuffer)) > 0) {
                 // char to string conversion
                 String readstring = String.copyValueOf(inputBuffer, 0, charRead);
-                sender_pin += readstring;
+                sender_name += readstring;
             }
             InputRead.close();
             //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
@@ -146,7 +150,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return sender_pin;
+        return sender_name;
     }
 
     public void saveReceiverPin(String pin) {
@@ -192,16 +196,10 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
         return sender_pin;
     }
 
-//    public static boolean check() {
-//         //configure = new ConfigureBroadcastersActivity();
-//        if (!new ConfigureBroadcastersActivity().readReceiverName().isEmpty())
-//            return false;
-//        else
-//            return true;
-//        Log.i("Configure", "names after change= " + (new ConfigureBroadcastersActivity().readReceiverName()));
-////
-////        return c;
-//    }
+    public String check() {
+        String str = "Pahwa";
+        return str;
+    }
 
     @Override
     public void onClick(View v) {

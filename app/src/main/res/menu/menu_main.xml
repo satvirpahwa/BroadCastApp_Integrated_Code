@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_I_am_broadcaster"
         android:orderInCategory="100"
-        android:title="I am broadcaster"
+        android:title="I am Broadcaster"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_help"

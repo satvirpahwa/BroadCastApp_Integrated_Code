@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="10dp"
+    android:layout_margin="5dp"
     android:orientation="vertical"
     tools:context="com.euroitlabs.broadcastapp.BroadcasterActivity">
 
@@ -29,17 +29,38 @@
             android:text="Share the above PIN once with all your receivers."
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <EditText
-            android:id="@+id/editText_msg"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:lines="2"
-            android:hint="Enter your message here" />
+            android:layout_marginBottom="5dp"
+            android:focusableInTouchMode="true"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText_msg"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="8"
+                android:hint="Enter your message here"
+                android:lines="2" />
+
+            <Button
+                android:id="@+id/btnsendmsg"
+                style="@style/btnStyleShakespeare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".1"
+                android:visibility="gone"
+                android:text="Send" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <TextView
@@ -53,22 +74,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:maxLength="2"
                 android:text="5" />
         </LinearLayout>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="bottom"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/btnsendmsg"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style="@style/btnStyleShakespeare"
-            android:text="Send Message" />
     </LinearLayout>
 </LinearLayout>

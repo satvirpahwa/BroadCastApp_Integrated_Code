@@ -8,6 +8,6 @@
     <string name="title_activity_broadcaster">Broadcast Message</string>
     <string name="action_regenerate_new_pin">Regenerate New PIN</string>
     <string name="action_stop_ongoing_broadcast">Stop Ongoing Broadcast</string>
-    <string name="action_receiver_setting">Receiver Setting</string>
+    <string name="action_receiver_setting">Receiver Settings</string>
     <string name="action_help">Help</string>
 </resources>

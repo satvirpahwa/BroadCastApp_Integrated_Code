@@ -1,7 +1,9 @@
 package com.euroitlabs.broadcastapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -43,7 +45,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     //   String decryptedMessage = "";
     int M1 = 2, M2 = 4, M3 = 9, M4 = 5;
     int N1 = 4, N2 = 6;
-  //  String first2digits;
+    //  String first2digits;
     static WifiManager wifi;
     int index;
     static Random random;
@@ -100,8 +102,18 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
         et_message.setFilters(new InputFilter[]{filter, filterArray[0]});
         sendmsgbtn.setOnClickListener(this);
+        et_message.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    //   Toast.makeText(getApplicationContext(), "got the focus", Toast.LENGTH_LONG).show();
+                    sendmsgbtn.setVisibility(View.VISIBLE);
+                } else {
+                    //   Toast.makeText(getApplicationContext(), "lost the focus", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
-
 //    @Override
 //    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 //
@@ -124,14 +136,17 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             case R.id.btnsendmsg:
 //                long start = System.currentTimeMillis();
 //                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
-     //
+                //
                 String st = "";
                 String message = "";
                 st = et_message.getText().toString();
                 if (st.isEmpty()) {
-                 //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
+                    //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
                     //  Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
-                    Utils.customToast(this, "Please enter a message to broadcast.");
+                    Utils.customToast(this, "Please enter a message to broadcast");
+                } else if (et_hotspottimer.getText().toString().isEmpty()) {
+                    Utils.customToast(this, "Please enter broadcast time");
+
                 } else {
                     if (wifi.isWifiEnabled()) {
                         Log.i("wificheckthread", "Mainactivity inside wifi enabled message");
@@ -161,8 +176,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                         }
                     }
                     et_message.setText("");
+                    //   sendmsgbtn.setVisibility(View.GONE);
                     //   Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
-                  //            progressDialog.dismiss();
+                    //            progressDialog.dismiss();
                     Utils.customToast(this, "Message broadcasted");
                     Intent intent = new Intent(this, BroadcastService.class);
                     intent.putExtra("timer", et_hotspottimer.getText().toString());
@@ -175,11 +191,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_regenerate_new_pin:
-                int value = 0;
-                value = generateSenderPin();
-                senderpintxt.setText(String.valueOf(value));
-                return true;
             case R.id.action_stop_ongoing_broadcast:
                 if (!wifi.isWifiEnabled()) {
                     Utils.turnOnOffHotspot(getApplicationContext(), false);
@@ -188,7 +199,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     Utils.customToast(this, "Broadcasting message stopped");
                 } else {
                     //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
-                  //  Utils.customToast(this, "No Ongoing Broadcast to stop");
+                    //  Utils.customToast(this, "No Ongoing Broadcast to stop");
 
                 }
                 return true;
@@ -197,12 +208,40 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(in);
                 return true;
+            case R.id.action_regenerate_new_pin:
+                receiverPinAlert();
+                return true;
             case R.id.action_help:
                 //   Toast.makeText(this, "Option help", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void receiverPinAlert() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure you want to change the pin ?");
+
+        alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // Toast.makeText(BroadcasterActivity.this, "You clicked yes button", Toast.LENGTH_LONG).show();
+                int value = 0;
+                value = generateSenderPin();
+                senderpintxt.setText(String.valueOf(value));
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     public int generateSenderPin() {
@@ -254,6 +293,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         }
         return sender_pin;
     }
+
 
 //    /**
 //     * Turn on or off Hotspot.
@@ -364,7 +404,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     }
 
     String encryptMessage(String hotspotName) {
-     //   first2digits = String.valueOf(generateTwoRandomDigits());
+        //   first2digits = String.valueOf(generateTwoRandomDigits());
         encryptedMessage = "";
         //   char c ;
         for (index = 0; index < hotspotName.length(); index++) {
