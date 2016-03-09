@@ -225,14 +225,14 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 } else if ((name1.isEmpty() && pin1.isEmpty()) && (name2.isEmpty() && pin2.isEmpty()) && (name3.isEmpty() && pin3.isEmpty()) && (name4.isEmpty() && pin4.isEmpty()) && (name5.isEmpty() && pin5.isEmpty())) {
                     saveReceiverPin("");
                     saveReceiverName("");
-                    SingletonFile.getInstance().setString("");
+                 //   SingletonFile.getInstance().setString("");
                 } else {
                     //     dbManager.insert(name1, pin1);
                     String finalname = name1 + " " + name2 + " " + name3 + " " + name4 + " " + name5;
                     String finalpin = pin1 + " " + pin2 + " " + pin3 + " " + pin4 + " " + pin5;
                     saveReceiverName(finalname);
                     saveReceiverPin(finalpin);
-                    SingletonFile.getInstance().setString(finalname);
+                 //   SingletonFile.getInstance().setString(finalname);
                     //    check();
                     Log.i("Configure", "on click name :" + finalname);
                     Log.i("Configure", "on click pin :" + finalpin);
