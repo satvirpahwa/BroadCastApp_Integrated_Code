@@ -44,9 +44,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startreceivebroadcastsbtn.setEnabled(false);
             startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         } else {
-            //   stopreceivebroadcastsbtn.setEnabled(false);
-            stopreceivebroadcastsbtn.setVisibility(View.GONE);
-            //  stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
+               stopreceivebroadcastsbtn.setEnabled(false);
+          //  stopreceivebroadcastsbtn.setVisibility(View.GONE);
+              stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         }
     }
 
@@ -113,8 +113,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         }
                         startreceivebroadcastsbtn.setEnabled(false);
                         startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
-                        stopreceivebroadcastsbtn.setVisibility(View.VISIBLE);
-                        //    stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
+                        stopreceivebroadcastsbtn.setEnabled(true);
+                            stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
                         Utils.customToast(this, "Receive broadcast messages enabled");
                     } else {
                         //  Utils.customToast(this, "Already enabled");
@@ -129,9 +129,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     if (mainWifi.isWifiEnabled()) {
                         stopService(new Intent(this, MyService.class));
                         startreceivebroadcastsbtn.setEnabled(true);
-                        startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
-                        stopreceivebroadcastsbtn.setVisibility(View.GONE);
-                        //  stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
+                       startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
+                        stopreceivebroadcastsbtn.setEnabled(false);
+                          stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
                         // Toast.makeText(this, "Receiving Broadcasts stopped", Toast.LENGTH_SHORT).show();
                         Utils.customToast(this, "Receiving Broadcasts stopped");
                     }

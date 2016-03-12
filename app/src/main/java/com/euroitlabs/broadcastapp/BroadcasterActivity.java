@@ -1,6 +1,7 @@
 package com.euroitlabs.broadcastapp;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.io.FileInputStream;
@@ -31,7 +33,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     TextView senderpintxt;
     EditText et_message;
     Button sendmsgbtn;
-    EditText et_hotspottimer;
+   // EditText et_hotspottimer;
     //   private static final String TAG = "Broadcastapp";
 
     //    private static final int START_STICKY = 0;
@@ -49,6 +51,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     static WifiManager wifi;
     int index;
     static Random random;
+    MenuItem register;
+    NumberPicker np;
+    String OldValue = "", NewValue = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +64,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         senderpintxt = (TextView) findViewById(R.id.sendrpin_txt);
         et_message = (EditText) findViewById(R.id.editText_msg);
         sendmsgbtn = (Button) findViewById(R.id.btnsendmsg);
-        et_hotspottimer = (EditText) findViewById(R.id.timer);
+        np = (NumberPicker) findViewById(R.id.numberPicker);
+      //  et_hotspottimer = (EditText) findViewById(R.id.timer);
 
         random = new Random();
         if (readSenderPin().isEmpty()) {
@@ -109,10 +115,20 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     //   Toast.makeText(getApplicationContext(), "got the focus", Toast.LENGTH_LONG).show();
                     sendmsgbtn.setVisibility(View.VISIBLE);
                 } else {
+
                     //   Toast.makeText(getApplicationContext(), "lost the focus", Toast.LENGTH_LONG).show();
                 }
             }
         });
+        np.setMinValue(1);
+        np.setMaxValue(99);
+        np.setValue(5);
+        np.setWrapSelectorWheel(true);
+//        if(isMyServiceRunning(BroadcastService.class)){
+//            register.setVisible(true);
+////        }else{
+////            register.setVisible(false);
+//        }
     }
 //    @Override
 //    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -127,6 +143,13 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_broadcaster, menu);
+        register = menu.findItem(R.id.action_stop_ongoing_broadcast);
+        if(isMyServiceRunning(BroadcastService.class)) {
+            register.setVisible(true);
+
+        }else{
+            register.setVisible(false);
+        }
         return true;
     }
 
@@ -134,9 +157,10 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnsendmsg:
-//                long start = System.currentTimeMillis();
-//                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
-                //
+
+                long start = System.currentTimeMillis();
+                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
+
                 String st = "";
                 String message = "";
                 st = et_message.getText().toString();
@@ -144,10 +168,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
                     //  Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
                     Utils.customToast(this, "Please enter a message to broadcast");
-                } else if (et_hotspottimer.getText().toString().isEmpty()) {
-                    Utils.customToast(this, "Please enter broadcast time");
-
                 } else {
+                    register.setVisible(true);
                     if (wifi.isWifiEnabled()) {
                         Log.i("wificheckthread", "Mainactivity inside wifi enabled message");
                         message = messageToBeEncrypted(st);
@@ -180,11 +202,11 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     //   Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
                     //            progressDialog.dismiss();
                     Utils.customToast(this, "Message broadcasted");
-                    Intent intent = new Intent(this, BroadcastService.class);
-                    intent.putExtra("timer", et_hotspottimer.getText().toString());
-                    startService(intent);
-                    break;
-
+                    Log.i("BroadcastActivity", "number picker value = " + String.valueOf(np.getValue()));
+                        Intent intent = new Intent(this, BroadcastService.class);
+                        intent.putExtra("timer", String.valueOf(np.getValue()));
+                        startService(intent);
+                        break;
                 }
         }
     }
@@ -196,6 +218,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     Utils.turnOnOffHotspot(getApplicationContext(), false);
                     Utils.turnOnOffWifi(getApplicationContext(), true);
                     //   Toast.makeText(this, "Broadcasting message stopped", Toast.LENGTH_SHORT).show();
+                    stopService(new Intent(this, BroadcastService.class));
+                    register.setVisible(false);
                     Utils.customToast(this, "Broadcasting message stopped");
                 } else {
                     //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
@@ -218,7 +242,15 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     public void receiverPinAlert() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Are you sure you want to change the pin ?");

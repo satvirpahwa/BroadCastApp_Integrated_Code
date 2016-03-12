@@ -100,7 +100,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
 
 
         }
-      //  ConfigureBroadcastersActivity c = new ConfigureBroadcastersActivity();
+        //  ConfigureBroadcastersActivity c = new ConfigureBroadcastersActivity();
 //        String x = readReceiverName();
 //        Log.i("Configure", "names value = " + x);
 
@@ -188,7 +188,7 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 sender_pin += readstring;
             }
             InputRead.close();
-        //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,27 +216,29 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                 final String name5 = et_name5.getText().toString();
                 final String pin5 = et_pin5.getText().toString();
                 if ((!name1.isEmpty() && pin1.isEmpty()) || (!name2.isEmpty() && pin2.isEmpty()) || (!name3.isEmpty() && pin3.isEmpty()) || (!name4.isEmpty() && pin4.isEmpty()) || (!name5.isEmpty() && pin5.isEmpty())) {
-                 //   Toast.makeText(getApplicationContext(), "Please enter pin corresponding to the name.", Toast.LENGTH_LONG).show();
+                    //   Toast.makeText(getApplicationContext(), "Please enter pin corresponding to the name.", Toast.LENGTH_LONG).show();
                     Utils.customToast(this, "Please enter pin corresponding to the name");
                 } else if ((name1.isEmpty() && !pin1.isEmpty()) || (name2.isEmpty() && !pin2.isEmpty()) || (name3.isEmpty() && !pin3.isEmpty()) || (name4.isEmpty() && !pin4.isEmpty()) || (name5.isEmpty() && !pin5.isEmpty())) {
-                  //  Toast.makeText(getApplicationContext(), "Please enter name corresponding to the name.", Toast.LENGTH_LONG).show();
+                    //  Toast.makeText(getApplicationContext(), "Please enter name corresponding to the name.", Toast.LENGTH_LONG).show();
                     Utils.customToast(this, "Please enter name corresponding to the pin");
 
                 } else if ((name1.isEmpty() && pin1.isEmpty()) && (name2.isEmpty() && pin2.isEmpty()) && (name3.isEmpty() && pin3.isEmpty()) && (name4.isEmpty() && pin4.isEmpty()) && (name5.isEmpty() && pin5.isEmpty())) {
                     saveReceiverPin("");
                     saveReceiverName("");
-                 //   SingletonFile.getInstance().setString("");
+                    //   SingletonFile.getInstance().setString("");
+                } else if (((!name1.isEmpty()) && (!pin1.isEmpty()) && (pin1.length()!=4)) || ((!name2.isEmpty()) && (!pin2.isEmpty()) && (pin2.length()!=4)) || ((!name3.isEmpty()) && (!pin3.isEmpty()) && (pin3.length()!=4)) || ((!name4.isEmpty()) && (!pin4.isEmpty()) && (pin4.length()!=4)) || ((!name5.isEmpty()) && (!pin5.isEmpty()) && (pin5.length()!=4))) {
+                    Utils.customToast(this, "Please enter a valid 4 digit pin");
                 } else {
                     //     dbManager.insert(name1, pin1);
                     String finalname = name1 + " " + name2 + " " + name3 + " " + name4 + " " + name5;
                     String finalpin = pin1 + " " + pin2 + " " + pin3 + " " + pin4 + " " + pin5;
                     saveReceiverName(finalname);
                     saveReceiverPin(finalpin);
-                 //   SingletonFile.getInstance().setString(finalname);
+                    //   SingletonFile.getInstance().setString(finalname);
                     //    check();
                     Log.i("Configure", "on click name :" + finalname);
                     Log.i("Configure", "on click pin :" + finalpin);
-               //     Toast.makeText(getApplicationContext(), "save button clicked", Toast.LENGTH_LONG).show();
+                    //     Toast.makeText(getApplicationContext(), "save button clicked", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.buttonback:
