@@ -234,7 +234,6 @@ public class ConfigureBroadcastersActivity extends Activity implements View.OnCl
                     String finalpin = pin1 + " " + pin2 + " " + pin3 + " " + pin4 + " " + pin5;
                     saveReceiverName(finalname);
                     saveReceiverPin(finalpin);
-                    //   SingletonFile.getInstance().setString(finalname);
                     //    check();
                     Log.i("Configure", "on click name :" + finalname);
                     Log.i("Configure", "on click pin :" + finalpin);
