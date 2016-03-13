@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -33,7 +34,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     TextView senderpintxt;
     EditText et_message;
     Button sendmsgbtn;
-   // EditText et_hotspottimer;
+    // EditText et_hotspottimer;
     //   private static final String TAG = "Broadcastapp";
 
     //    private static final int START_STICKY = 0;
@@ -65,7 +66,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         et_message = (EditText) findViewById(R.id.editText_msg);
         sendmsgbtn = (Button) findViewById(R.id.btnsendmsg);
         np = (NumberPicker) findViewById(R.id.numberPicker);
-      //  et_hotspottimer = (EditText) findViewById(R.id.timer);
+        //  et_hotspottimer = (EditText) findViewById(R.id.timer);
 
         random = new Random();
         if (readSenderPin().isEmpty()) {
@@ -92,8 +93,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
                 for (int i = start; i < end; i++) {
                     if (source.charAt(i) < 32 || source.charAt(i) > 126) {
-                        //  Toast.makeText(getApplication(), "Character " + source.charAt(start) + " is not allowed in the message.", Toast.LENGTH_SHORT).show();
-                        Utils.customToast(getBaseContext(), "Character " + source.charAt(start) + " is not allowed in the message.");
+                        Toast.makeText(getApplication(), "Character " + source.charAt(start) + " is not allowed in the message.", Toast.LENGTH_SHORT).show();
+                        //    Utils.customToast(getBaseContext(), "Character " + source.charAt(start) + " is not allowed in the message.");
 
                         return "";
                     }
@@ -144,10 +145,10 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_broadcaster, menu);
         register = menu.findItem(R.id.action_stop_ongoing_broadcast);
-        if(isMyServiceRunning(BroadcastService.class)) {
+        if (isMyServiceRunning(BroadcastService.class)) {
             register.setVisible(true);
 
-        }else{
+        } else {
             register.setVisible(false);
         }
         return true;
@@ -166,8 +167,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 st = et_message.getText().toString();
                 if (st.isEmpty()) {
                     //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
-                    //  Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
-                    Utils.customToast(this, "Please enter a message to broadcast");
+                    Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
+                    //   Utils.customToast(this, "Please enter a message to broadcast");
                 } else {
                     register.setVisible(true);
                     if (wifi.isWifiEnabled()) {
@@ -199,14 +200,14 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     }
                     et_message.setText("");
                     //   sendmsgbtn.setVisibility(View.GONE);
-                    //   Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
                     //            progressDialog.dismiss();
-                    Utils.customToast(this, "Message broadcasted");
+                    //  Utils.customToast(this, "Message broadcasted");
                     Log.i("BroadcastActivity", "number picker value = " + String.valueOf(np.getValue()));
-                        Intent intent = new Intent(this, BroadcastService.class);
-                        intent.putExtra("timer", String.valueOf(np.getValue()));
-                        startService(intent);
-                        break;
+                    Intent intent = new Intent(this, BroadcastService.class);
+                    intent.putExtra("timer", String.valueOf(np.getValue()));
+                    startService(intent);
+                    break;
                 }
         }
     }
@@ -220,7 +221,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     //   Toast.makeText(this, "Broadcasting message stopped", Toast.LENGTH_SHORT).show();
                     stopService(new Intent(this, BroadcastService.class));
                     register.setVisible(false);
-                    Utils.customToast(this, "Broadcasting message stopped");
+                    //   Utils.customToast(this, "Broadcasting message stopped");
+                    Toast.makeText(this, "Broadcasted Message stopped", Toast.LENGTH_SHORT).show();
                 } else {
                     //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
                     //  Utils.customToast(this, "No Ongoing Broadcast to stop");
@@ -242,6 +244,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 return super.onOptionsItemSelected(item);
         }
     }
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -251,6 +254,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         }
         return false;
     }
+
     public void receiverPinAlert() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Are you sure you want to change the pin ?");

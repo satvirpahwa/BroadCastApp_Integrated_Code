@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -44,9 +45,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startreceivebroadcastsbtn.setEnabled(false);
             startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         } else {
-               stopreceivebroadcastsbtn.setEnabled(false);
-          //  stopreceivebroadcastsbtn.setVisibility(View.GONE);
-              stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
+            stopreceivebroadcastsbtn.setEnabled(false);
+            //  stopreceivebroadcastsbtn.setVisibility(View.GONE);
+            stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         }
     }
 
@@ -91,13 +92,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(new Intent(getApplicationContext(), ConfigureBroadcastersActivity.class));
                 break;
             case R.id.button2:
-  //                    Toast.makeText(getApplicationContext(), checkReceiverName(), Toast.LENGTH_SHORT).show();
+                //                    Toast.makeText(getApplicationContext(), checkReceiverName(), Toast.LENGTH_SHORT).show();
                 if (checkReceiverName().isEmpty()) {
-//                    Toast toast = Toast.makeText(this, "Please configure Broadcasters for receiving messages", Toast.LENGTH_SHORT);
+                    Toast.makeText(this, "Please configure Broadcasters for receiving messages", Toast.LENGTH_SHORT).show();
 //                    View view = toast.getView();
 //                    view.setBackgroundResource(R.drawable.custom_toast);
 //                    toast.show();
-                    Utils.customToast(this, "Please configure Broadcasters for receiving messages");
+                    //       Utils.customToast(this, "Please configure Broadcasters for receiving messages");
                 } else {
                     if (!isMyServiceRunning(MyService.class)) {
                         if (mainWifi.isWifiEnabled()) {
@@ -114,8 +115,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         startreceivebroadcastsbtn.setEnabled(false);
                         startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
                         stopreceivebroadcastsbtn.setEnabled(true);
-                            stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
-                        Utils.customToast(this, "Receive broadcast messages enabled");
+                        stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
+                        //       Utils.customToast(this, "Receiving Broadcast Message started");
+                        Toast.makeText(this, "Receiving Broadcast Message started", Toast.LENGTH_SHORT).show();
                     } else {
                         //  Utils.customToast(this, "Already enabled");
 
@@ -129,11 +131,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     if (mainWifi.isWifiEnabled()) {
                         stopService(new Intent(this, MyService.class));
                         startreceivebroadcastsbtn.setEnabled(true);
-                       startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
+                        startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
                         stopreceivebroadcastsbtn.setEnabled(false);
-                          stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
-                        // Toast.makeText(this, "Receiving Broadcasts stopped", Toast.LENGTH_SHORT).show();
-                        Utils.customToast(this, "Receiving Broadcasts stopped");
+                        stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
+                        Toast.makeText(this, "Receiving Broadcast Message stopped", Toast.LENGTH_SHORT).show();
+                        //   Utils.customToast(this, "Receiving Broadcast Message stopped");
                     }
                 } else {
                     //   Toast.makeText(this, "No Receive Broadcast service enabled", Toast.LENGTH_SHORT).show();
