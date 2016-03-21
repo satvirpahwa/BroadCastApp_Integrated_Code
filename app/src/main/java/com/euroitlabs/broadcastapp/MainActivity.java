@@ -17,9 +17,7 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    private Button configbroadcastersbtn, startreceivebroadcastsbtn, stopreceivebroadcastsbtn;
-    ConfigureBroadcastersActivity configure;
-    String abc;
+    Button configbroadcastersbtn, startreceivebroadcastsbtn, stopreceivebroadcastsbtn;
     WifiManager mainWifi;
     static final int READ_BLOCK_SIZE = 100;
 
@@ -28,25 +26,23 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //   configure = new ConfigureBroadcastersActivity();
+
         configbroadcastersbtn = (Button) findViewById(R.id.button1);
         startreceivebroadcastsbtn = (Button) findViewById(R.id.button2);
         stopreceivebroadcastsbtn = (Button) findViewById(R.id.button3);
+
         setTitle("Main Menu");
         mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
         configbroadcastersbtn.setOnClickListener(this);
         startreceivebroadcastsbtn.setOnClickListener(this);
         stopreceivebroadcastsbtn.setOnClickListener(this);
-        //     startreceivebroadcastsbtn.setClickable(false);
-//        startreceivebroadcastsbtn.setEnabled(false);
-//        startreceivebroadcastsbtn.setBackgroundColor(Color.GRAY);
+
         if (isMyServiceRunning(MyService.class)) {
             startreceivebroadcastsbtn.setEnabled(false);
             startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         } else {
             stopreceivebroadcastsbtn.setEnabled(false);
-            //  stopreceivebroadcastsbtn.setVisibility(View.GONE);
             stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
         }
     }
@@ -58,6 +54,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return true;
     }
 
+    /**
+     * Checking recv_name.txt file
+     * for any receiver
+     */
     public String checkReceiverName() {
         //reading text from file
         String sender_name = "";
@@ -67,7 +67,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             InputStreamReader InputRead = new InputStreamReader(fileIn);
 
             char[] inputBuffer = new char[READ_BLOCK_SIZE];
-            String s = "";
             int charRead;
 
             while ((charRead = InputRead.read(inputBuffer)) > 0) {
@@ -76,7 +75,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 sender_name += readstring;
             }
             InputRead.close();
-            //    Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,37 +90,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(new Intent(getApplicationContext(), ConfigureBroadcastersActivity.class));
                 break;
             case R.id.button2:
-                //                    Toast.makeText(getApplicationContext(), checkReceiverName(), Toast.LENGTH_SHORT).show();
                 if (checkReceiverName().isEmpty()) {
                     Toast.makeText(this, "Please configure Broadcasters for receiving messages", Toast.LENGTH_SHORT).show();
-//                    View view = toast.getView();
-//                    view.setBackgroundResource(R.drawable.custom_toast);
-//                    toast.show();
-                    //       Utils.customToast(this, "Please configure Broadcasters for receiving messages");
                 } else {
                     if (!isMyServiceRunning(MyService.class)) {
                         if (mainWifi.isWifiEnabled()) {
                             startService(new Intent(getApplicationContext(), MyService.class));
-                            //  Toast.makeText(this, "Receive broadcast messages enabled", Toast.LENGTH_SHORT).show();
-                            //   Utils.customToast(this, "Receive broadcast messages enabled 1");
                         } else {
                             if (Utils.turnOnOffWifi(getApplicationContext(), true)) {
                                 startService(new Intent(getApplicationContext(), MyService.class));
-                                //  Toast.makeText(this, "Receive broadcast messages enabled", Toast.LENGTH_SHORT).show();
-                                //    Utils.customToast(this, "Receive broadcast messages enabled 2");
                             }
                         }
                         startreceivebroadcastsbtn.setEnabled(false);
                         startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
                         stopreceivebroadcastsbtn.setEnabled(true);
                         stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
-                        //       Utils.customToast(this, "Receiving Broadcast Message started");
                         Toast.makeText(this, "Receiving Broadcast Message started", Toast.LENGTH_SHORT).show();
-                    } else {
-                        //  Utils.customToast(this, "Already enabled");
-
-                        //   stopreceivebroadcastsbtn.setBackgroundColor(Color.GRAY);
-
                     }
                 }
                 break;
@@ -135,11 +118,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         stopreceivebroadcastsbtn.setEnabled(false);
                         stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
                         Toast.makeText(this, "Receiving Broadcast Message stopped", Toast.LENGTH_SHORT).show();
-                        //   Utils.customToast(this, "Receiving Broadcast Message stopped");
                     }
-                } else {
-                    //   Toast.makeText(this, "No Receive Broadcast service enabled", Toast.LENGTH_SHORT).show();
-                    //  Utils.customToast(this, "No Receive Broadcast service enabled");
                 }
                 break;
         }
@@ -148,7 +127,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_I_am_broadcaster:
-                //   Toast.makeText(this, "Option I am Broadcaster", Toast.LENGTH_SHORT).show();
                 Intent in = new Intent(getApplicationContext(), BroadcasterActivity.class);
                 startActivity(in);
                 return true;
@@ -159,7 +137,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    /**
+     * Checking if any service is running
+     * in background
+     */
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -173,7 +154,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //  Toast.makeText(this, "Back pressed", Toast.LENGTH_SHORT).show();
         MainActivity.this.finish();
     }
 }

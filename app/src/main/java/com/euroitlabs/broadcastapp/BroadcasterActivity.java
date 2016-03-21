@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -29,32 +28,22 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.util.Random;
 
-public class BroadcasterActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class BroadcasterActivity extends Activity implements View.OnClickListener {
 
     TextView senderpintxt;
     EditText et_message;
     Button sendmsgbtn;
-    // EditText et_hotspottimer;
-    //   private static final String TAG = "Broadcastapp";
-
-    //    private static final int START_STICKY = 0;
-//    EditText et;
-//    Button bt;
     static final int READ_BLOCK_SIZE = 100;
-    String file = "";
     boolean sendr_pin_flag;
-    String encryptedMessage = "";
-    String complete_encryptedMessage = "";
-    //   String decryptedMessage = "";
+    String encryptedMessage = "", complete_encryptedMessage = "";
     int M1 = 2, M2 = 4, M3 = 9, M4 = 5;
     int N1 = 4, N2 = 6;
-    //  String first2digits;
     static WifiManager wifi;
     int index;
     static Random random;
     MenuItem register;
     NumberPicker np;
-    String OldValue = "", NewValue = "";
+    static String oldHotspotName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,23 +55,18 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         et_message = (EditText) findViewById(R.id.editText_msg);
         sendmsgbtn = (Button) findViewById(R.id.btnsendmsg);
         np = (NumberPicker) findViewById(R.id.numberPicker);
-        //  et_hotspottimer = (EditText) findViewById(R.id.timer);
 
         random = new Random();
         if (readSenderPin().isEmpty()) {
-            int value = 0;
+            int value;
             value = generateSenderPin();
             senderpintxt.setText(String.valueOf(value));
-            Log.i("savefile", "Sender pin saved inside if");
             sendr_pin_flag = true;
         } else {
-            Log.i("savefile", "Sender pin saved inside else");
-            String value = "";
+            String value;
             value = readSenderPin();
             senderpintxt.setText(value);
         }
-//        Intent intent = new Intent(this, MyService.class);
-//        startService(intent);
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
         InputFilter filter = new InputFilter() {
@@ -94,13 +78,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 for (int i = start; i < end; i++) {
                     if (source.charAt(i) < 32 || source.charAt(i) > 126) {
                         Toast.makeText(getApplication(), "Character " + source.charAt(start) + " is not allowed in the message.", Toast.LENGTH_SHORT).show();
-                        //    Utils.customToast(getBaseContext(), "Character " + source.charAt(start) + " is not allowed in the message.");
-
                         return "";
                     }
                 }
-
-
                 return null;
             }
         };
@@ -113,11 +93,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    //   Toast.makeText(getApplicationContext(), "got the focus", Toast.LENGTH_LONG).show();
                     sendmsgbtn.setVisibility(View.VISIBLE);
-                } else {
-
-                    //   Toast.makeText(getApplicationContext(), "lost the focus", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -125,20 +101,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         np.setMaxValue(99);
         np.setValue(5);
         np.setWrapSelectorWheel(true);
-//        if(isMyServiceRunning(BroadcastService.class)){
-//            register.setVisible(true);
-////        }else{
-////            register.setVisible(false);
-//        }
     }
-//    @Override
-//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//
-//    }
-//
-//    public void onNothingSelected(AdapterView<?> arg0) {
-//        // TODO Auto-generated method stub
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,53 +122,34 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         switch (v.getId()) {
             case R.id.btnsendmsg:
 
-                long start = System.currentTimeMillis();
-                final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
+                //  long start = System.currentTimeMillis();
+                //  final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
 
-                String st = "";
-                String message = "";
+                String st;
+                String message;
                 st = et_message.getText().toString();
                 if (st.isEmpty()) {
-                    //   progressDialog = ProgressDialog.show(BroadcasterActivity.this, "", "Broadcasting Message..");
                     Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
-                    //   Utils.customToast(this, "Please enter a message to broadcast");
                 } else {
                     register.setVisible(true);
                     if (wifi.isWifiEnabled()) {
-                        Log.i("wificheckthread", "Mainactivity inside wifi enabled message");
                         message = messageToBeEncrypted(st);
-                        Log.i("wificheckthread", "Mainactivity wifi enabled message = " + message);
-                        //      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                        if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
+                        if (setHotspotName(encryptMessage(message), getApplicationContext())) {
                             Utils.turnOnOffHotspot(getApplicationContext(), true);
-//                            et_message.setText("");
-//                            //   Toast.makeText(this, "Message broadcasted", Toast.LENGTH_SHORT).show();
-//                            progressDialog.dismiss();
-//                            Utils.customToast(this, "Message broadcasted");
                         }
                     } else {
-                        Log.i("wificheckthread", "Mainactivity inside wifi disabled message");
-//                    turnOnOffHotspot(getApplicationContext(), false);
-//                    turnOnOffWifi(getApplicationContext(), true);
-                        if (Utils.turnOnOffHotspot(getApplicationContext(), false) == false && Utils.turnOnOffWifi(getApplicationContext(), true) == true) {
-                            //  if(wifi.isWifiEnabled()){
-
+                        if (!Utils.turnOnOffHotspot(getApplicationContext(), false) && Utils.turnOnOffWifi(getApplicationContext(), true)) {
                             message = messageToBeEncrypted(st);
-                            Log.i("wificheckthread", "Mainactivity wifi disabled message = " + message);
-                            //         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                            if (setHotspotName(encryptMessage(message), getApplicationContext()) == true) {
+                            if (setHotspotName(encryptMessage(message), getApplicationContext())) {
                                 Utils.turnOnOffHotspot(getApplicationContext(), true);
                             }
                         }
                     }
                     et_message.setText("");
-                    //   sendmsgbtn.setVisibility(View.GONE);
                     Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
-                    //            progressDialog.dismiss();
-                    //  Utils.customToast(this, "Message broadcasted");
-                    Log.i("BroadcastActivity", "number picker value = " + String.valueOf(np.getValue()));
                     Intent intent = new Intent(this, BroadcastService.class);
                     intent.putExtra("timer", String.valueOf(np.getValue()));
+                    intent.putExtra("originalhotspotname", oldHotspotName);
                     startService(intent);
                     break;
                 }
@@ -218,15 +162,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 if (!wifi.isWifiEnabled()) {
                     Utils.turnOnOffHotspot(getApplicationContext(), false);
                     Utils.turnOnOffWifi(getApplicationContext(), true);
-                    //   Toast.makeText(this, "Broadcasting message stopped", Toast.LENGTH_SHORT).show();
                     stopService(new Intent(this, BroadcastService.class));
                     register.setVisible(false);
-                    //   Utils.customToast(this, "Broadcasting message stopped");
                     Toast.makeText(this, "Broadcasted Message stopped", Toast.LENGTH_SHORT).show();
-                } else {
-                    //  Toast.makeText(this, "No Ongoing Broadcast to stop", Toast.LENGTH_SHORT).show();
-                    //  Utils.customToast(this, "No Ongoing Broadcast to stop");
-
                 }
                 return true;
             case R.id.action_receiver_setting:
@@ -238,13 +176,16 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 receiverPinAlert();
                 return true;
             case R.id.action_help:
-                //   Toast.makeText(this, "Option help", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    /**
+     * Checking if any service is running
+     * in background
+     */
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -255,6 +196,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         return false;
     }
 
+    /**
+     * dialog to check pin change
+     */
     public void receiverPinAlert() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Are you sure you want to change the pin ?");
@@ -262,8 +206,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         alertDialogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface arg0, int arg1) {
-                // Toast.makeText(BroadcasterActivity.this, "You clicked yes button", Toast.LENGTH_LONG).show();
-                int value = 0;
+                int value;
                 value = generateSenderPin();
                 senderpintxt.setText(String.valueOf(value));
             }
@@ -280,13 +223,18 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         alertDialog.show();
     }
 
+    /**
+     * Generate sender pin
+     */
     public int generateSenderPin() {
         int sender_pin = (1 + random.nextInt(2)) * 1000 + random.nextInt(1000); //will generate a number 0000 to 9999
-        //  Toast.makeText(getApplicationContext(), "Random number is = " + value, Toast.LENGTH_LONG).show();
         saveSenderPin(String.valueOf(sender_pin));
         return sender_pin;
     }
 
+    /**
+     * Save sender pin in txt file
+     */
     public void saveSenderPin(String pin) {
         // add-write text into file
         try {
@@ -294,15 +242,14 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
             outputWriter.write(String.valueOf(pin));
             outputWriter.close();
-
-            //display file saved message
-//            Toast.makeText(getBaseContext(), "Broadcasters saved",
-//                    Toast.LENGTH_SHORT).show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Read sender pin from txt file
+     */
 
     public String readSenderPin() {
         //reading text from file
@@ -313,7 +260,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             InputStreamReader InputRead = new InputStreamReader(fileIn);
 
             char[] inputBuffer = new char[READ_BLOCK_SIZE];
-            String s = "";
             int charRead;
 
             while ((charRead = InputRead.read(inputBuffer)) > 0) {
@@ -322,7 +268,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 sender_pin += readstring;
             }
             InputRead.close();
-            //  Toast.makeText(getBaseContext(), sender_pin, Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -330,56 +275,18 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         return sender_pin;
     }
 
-
-//    /**
-//     * Turn on or off Hotspot.
-//     *
-//     * @param context
-//     * @param isTurnToOn
-//     */
-//    public static boolean turnOnOffHotspot(Context context, boolean isTurnToOn) {
-//        WifiManager wifiManager = (WifiManager) context
-//                .getSystemService(Context.WIFI_SERVICE);
-//        WifiApControl apControl = WifiApControl.getApControl(wifiManager);
-//        if (apControl != null) {
-//
-//            // TURN OFF YOUR WIFI BEFORE ENABLE HOTSPOT
-//            if (wifiManager.isWifiEnabled() && isTurnToOn)
-//                turnOnOffWifi(context, false);
-//
-//            apControl.setWifiApEnabled(apControl.getWifiApConfiguration(),
-//                    isTurnToOn);
-//        }
-//        return isTurnToOn;
-//    }
-//
-//
-//    /**
-//     * Turn On or Off wifi
-//     *
-//     * @param context
-//     * @param isTurnToOn
-//     */
-//    public static boolean turnOnOffWifi(Context context, boolean isTurnToOn) {
-//        WifiManager wifiManager = (WifiManager) context
-//                .getSystemService(Context.WIFI_SERVICE);
-//
-//        wifiManager.setWifiEnabled(isTurnToOn);
-//        return isTurnToOn;
-//    }
-
-    public boolean setHotspotName(String newName, Context context) {
-
-
+    /**
+     * Set Message as Hotspot name
+     * in encrypted form
+     */
+    public static boolean setHotspotName(String newName, Context context) {
         try {
-            //  newName = "";
-            Log.i("wificheckthread", "Mainactivity newName = " + newName);
             WifiManager wifiManager = (WifiManager) context.getSystemService(context.WIFI_SERVICE);
             Method getConfigMethod = wifiManager.getClass().getMethod("getWifiApConfiguration");
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
-
+            oldHotspotName = wifiConfig.SSID;
             wifiConfig.SSID = newName;
-
+            Log.i("abc", "hotspotname after = " + wifiConfig.SSID);
             Method setConfigMethod = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
             setConfigMethod.invoke(wifiManager, wifiConfig);
 
@@ -389,7 +296,10 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             return false;
         }
     }
-
+    /**
+     * Adding "X" as 15th character
+     * in message to be broadcasted
+     */
     String messageToBeEncrypted(String msg) {
         if (msg.length() < 30) {
             if (msg.length() < 14) {
@@ -417,6 +327,9 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         return msg;
     }
 
+    /**
+     * Encrypt character
+     */
     int selectedMessageChar(int n) {
         int character_n = 0;
         if (index == 0 || index == 8 || index == 16 || index == 24) {
@@ -439,14 +352,13 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
         return character_n;
     }
 
+    /**
+     * Encrypt message
+     */
     String encryptMessage(String hotspotName) {
-        //   first2digits = String.valueOf(generateTwoRandomDigits());
         encryptedMessage = "";
-        //   char c ;
         for (index = 0; index < hotspotName.length(); index++) {
-            //  Toast.makeText(getApplicationContext(), String.valueOf(hotspotName.length()), Toast.LENGTH_SHORT).show();
             char c = hotspotName.charAt(index);
-            //  Toast.makeText(getApplicationContext(), String.valueOf(c), Toast.LENGTH_SHORT).show();
             switch (c) {
                 case 'A':
                     encryptedChar(selectedMessageChar(1));
@@ -738,23 +650,15 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     break;
             }
         }
-//        String encrptedtext = "";
-//
-////            String str_1 = str.substring(0, 15);
-////            String str_2 = str.substring(15, 30);
-//        encrptedtext = str + "
         complete_encryptedMessage = String.valueOf(generateTwoRandomDigits()) + encryptedMessage;
-        Log.i("wificheckthread", "Mainactivity service encrypted = " + encryptedMessage);
 
-
-        //  tv2.setText(complete_encryptedMessage);
-        //   }
-//        else{
-//
-//        }
         return complete_encryptedMessage;
     }
 
+    /**
+     * Encrpted character corresponding
+     * to original message character
+     */
     void encryptedChar(int n) {
 
         switch (n) {
@@ -1052,19 +956,14 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
 
     }
 
+    /**
+     * Two Random digits prior to
+     * encrypted message
+     */
+
     public static int generateTwoRandomDigits() {
 
         int sender_pin = (1 + random.nextInt(2)) * 10 + random.nextInt(10); //will generate a number 00 to 99
-//        Toast.makeText(getApplicationContext(), "Random number is = " + sender_pin, Toast.LENGTH_LONG).show();
         return sender_pin;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // On selecting a spinner item
-        String item = parent.getItemAtPosition(position).toString();
-
-        // Showing selected spinner item
-        //  Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
     }
 }

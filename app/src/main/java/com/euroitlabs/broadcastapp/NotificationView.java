@@ -17,17 +17,12 @@ public class NotificationView extends Activity implements View.OnClickListener {
 
         notificationtxt = (TextView) findViewById(R.id.text_notification);
         processIntent(getIntent());
-        //    Intent intent = new Intent();
-
-
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         processIntent(intent);
     }
-
-    ;
 
     private void processIntent(Intent intent) {
         //get your extras
@@ -39,7 +34,6 @@ public class NotificationView extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.text_notification:
-
                 break;
         }
     }
