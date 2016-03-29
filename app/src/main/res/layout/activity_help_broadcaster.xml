@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/ScrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="15dip">
+
+            <TextView
+                android:id="@+id/help_point_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="5dip"
+                android:layout_weight="1"
+                android:text="•	This app can also be used to broadcast a message with the range of Wi-Fi without using any internet." />
+
+            <TextView
+                android:id="@+id/help_point_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="5dip"
+                android:layout_weight="1"
+                android:text="•	Simply type the message and select time till it needs to be broadcasted to the authenticated receivers." />
+
+            <TextView
+                android:id="@+id/help_point_3"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="5dip"
+                android:layout_weight="1"
+                android:text="•	Broadcasted message can be stopped anytime by selecting the option “stop ongoing broadcast” from the action bar at the top." />
+
+            <TextView
+                android:id="@+id/help_point_4"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="5dip"
+                android:layout_weight="1"
+                android:text="•	User can regenerate a new pin anytime by selecting the option “regenerate new pin” from the action bar at the top." />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

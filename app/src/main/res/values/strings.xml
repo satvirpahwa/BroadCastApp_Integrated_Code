@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Broadcast App</string>
+    <string name="app_name">Secure Broadcast</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -10,4 +10,6 @@
     <string name="action_stop_ongoing_broadcast">Stop Ongoing Broadcast</string>
     <string name="action_receiver_setting">Receiver Settings</string>
     <string name="action_help">Help</string>
+    <string name="title_activity_receiver_help">Help</string>
+    <string name="title_activity_broadcaster_help">Help</string>
 </resources>

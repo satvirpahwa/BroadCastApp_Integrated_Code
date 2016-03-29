@@ -11,7 +11,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +43,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     MenuItem register;
     NumberPicker np;
     static String oldHotspotName;
+    boolean wifiFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +121,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnsendmsg:
-
-                //  long start = System.currentTimeMillis();
-                //  final long end = start + 60 * 1000; // 60 seconds * 1000 ms/sec
-
                 String st;
                 String message;
                 st = et_message.getText().toString();
@@ -132,40 +128,48 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                     Toast.makeText(this, "Please enter a message to broadcast.", Toast.LENGTH_SHORT).show();
                 } else {
                     register.setVisible(true);
+                    message = messageToBeEncrypted(st);
                     if (wifi.isWifiEnabled()) {
-                        message = messageToBeEncrypted(st);
+                        wifiFlag = true;
                         if (setHotspotName(encryptMessage(message), getApplicationContext())) {
                             Utils.turnOnOffHotspot(getApplicationContext(), true);
                         }
-                    } else {
-                        if (!Utils.turnOnOffHotspot(getApplicationContext(), false) && Utils.turnOnOffWifi(getApplicationContext(), true)) {
-                            message = messageToBeEncrypted(st);
-                            if (setHotspotName(encryptMessage(message), getApplicationContext())) {
-                                Utils.turnOnOffHotspot(getApplicationContext(), true);
-                            }
+                    } else if (!wifi.isWifiEnabled()) {
+                        if (setHotspotName(encryptMessage(message), getApplicationContext())) {
+                            Utils.turnOnOffHotspot(getApplicationContext(), true);
+                        }
+                    } else if (!Utils.turnOnOffHotspot(getApplicationContext(), false) && Utils.turnOnOffWifi(getApplicationContext(), true)) {
+                        if (setHotspotName(encryptMessage(message), getApplicationContext())) {
+                            Utils.turnOnOffHotspot(getApplicationContext(), true);
                         }
                     }
-                    et_message.setText("");
-                    Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, BroadcastService.class);
-                    intent.putExtra("timer", String.valueOf(np.getValue()));
-                    intent.putExtra("originalhotspotname", oldHotspotName);
-                    startService(intent);
-                    break;
                 }
+                et_message.setText("");
+                Toast.makeText(this, "Message Broadcasted", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, BroadcastService.class);
+                intent.putExtra("timer", String.valueOf(np.getValue()));
+                intent.putExtra("originalhotspotname", oldHotspotName);
+                intent.putExtra("wififlag", wifiFlag);
+                startService(intent);
+                break;
         }
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_stop_ongoing_broadcast:
-                if (!wifi.isWifiEnabled()) {
-                    Utils.turnOnOffHotspot(getApplicationContext(), false);
+                register.setVisible(false);
+                stopService(new Intent(getApplicationContext(), BroadcastService.class));
+                Utils.turnOnOffHotspot(getApplicationContext(), false);
+                BroadcasterActivity.setHotspotName(oldHotspotName, getApplicationContext());
+                if (!wifi.isWifiEnabled() && wifiFlag) {
+                    wifiFlag = false;
                     Utils.turnOnOffWifi(getApplicationContext(), true);
-                    stopService(new Intent(this, BroadcastService.class));
-                    register.setVisible(false);
-                    Toast.makeText(this, "Broadcasted Message stopped", Toast.LENGTH_SHORT).show();
+                } else {
+                    Utils.turnOnOffWifi(getApplicationContext(), false);
                 }
+                Toast.makeText(this, "Broadcasted Message stopped", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_receiver_setting:
                 Intent in = new Intent(getApplicationContext(), MainActivity.class);
@@ -176,6 +180,8 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
                 receiverPinAlert();
                 return true;
             case R.id.action_help:
+                Intent i = new Intent(getApplicationContext(), BroadcasterHelpActivity.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -186,6 +192,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
      * Checking if any service is running
      * in background
      */
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -286,7 +293,6 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             WifiConfiguration wifiConfig = (WifiConfiguration) getConfigMethod.invoke(wifiManager);
             oldHotspotName = wifiConfig.SSID;
             wifiConfig.SSID = newName;
-            Log.i("abc", "hotspotname after = " + wifiConfig.SSID);
             Method setConfigMethod = wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
             setConfigMethod.invoke(wifiManager, wifiConfig);
 
@@ -296,6 +302,7 @@ public class BroadcasterActivity extends Activity implements View.OnClickListene
             return false;
         }
     }
+
     /**
      * Adding "X" as 15th character
      * in message to be broadcasted

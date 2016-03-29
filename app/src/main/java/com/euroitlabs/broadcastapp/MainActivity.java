@@ -20,6 +20,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     Button configbroadcastersbtn, startreceivebroadcastsbtn, stopreceivebroadcastsbtn;
     WifiManager mainWifi;
     static final int READ_BLOCK_SIZE = 100;
+    boolean wifiFlag = false;
 
 
     @Override
@@ -95,6 +96,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 } else {
                     if (!isMyServiceRunning(MyService.class)) {
                         if (mainWifi.isWifiEnabled()) {
+                            wifiFlag = true;
                             startService(new Intent(getApplicationContext(), MyService.class));
                         } else {
                             if (Utils.turnOnOffWifi(getApplicationContext(), true)) {
@@ -111,8 +113,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.button3:
                 if (isMyServiceRunning(MyService.class)) {
-                    if (mainWifi.isWifiEnabled()) {
+                    if (mainWifi.isWifiEnabled() && wifiFlag) {
+                        wifiFlag = false;
                         stopService(new Intent(this, MyService.class));
+                        startreceivebroadcastsbtn.setEnabled(true);
+                        startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
+                        stopreceivebroadcastsbtn.setEnabled(false);
+                        stopreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_disabled);
+                        Toast.makeText(this, "Receiving Broadcast Message stopped", Toast.LENGTH_SHORT).show();
+                    } else if (mainWifi.isWifiEnabled() && !wifiFlag) {
+                        stopService(new Intent(this, MyService.class));
+                        Utils.turnOnOffWifi(getApplicationContext(), false);
                         startreceivebroadcastsbtn.setEnabled(true);
                         startreceivebroadcastsbtn.setBackgroundResource(R.drawable.custom_btn_shakespeare);
                         stopreceivebroadcastsbtn.setEnabled(false);
@@ -131,12 +142,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 startActivity(in);
                 return true;
             case R.id.action_help:
-                //   Toast.makeText(this, "Option help", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getApplicationContext(), ReceiverHelpActivity.class);
+                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
     /**
      * Checking if any service is running
      * in background

@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/ScrollView1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="15dip">
+
+            <TextView
+                android:id="@+id/help_point_1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="5dip"
+                android:text="•	This application can be used to receive broadcasted message within a range of the Wi-Fi." />
+
+            <TextView
+                android:id="@+id/help_point_2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="5dip"
+                android:text="•	To receive a broadcasted message sender need to be authenticated once by manually inserting the 4 digit pin at the receiver side." />
+
+            <TextView
+                android:id="@+id/help_point_3"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:layout_marginBottom="5dip"
+                android:text="•	User can only receive broadcasts from the authenticated broadcasters." />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

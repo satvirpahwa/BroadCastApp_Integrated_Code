@@ -80,7 +80,7 @@ public class MyService extends Service {
         //     Build notification
         Notification noti = new Notification.Builder(this)
                 .setContentTitle("Message Received..")
-                .setContentText(broadcast_message).setSmallIcon(R.drawable.ic_launcher)
+                .setContentText(broadcast_message).setSmallIcon(R.mipmap.logo)
                 .setContentIntent(pIntent).setSound(soundUri).build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         // hide the notification after its selected
